@@ -16,7 +16,7 @@ let isSame = function (a, b) {
 };
 
 let algorithm = Loaf.use(Deno.args[0]);
-let groundBuffer = new Uint8Array(2520);
+let groundBuffer = new Uint8Array(Math.floor(Math.random() * 3781) + 1260);
 let proxyBuffer = new Uint8Array(algorithm.encodeLength(groundBuffer.length));
 let targetBuffer = new Uint8Array(algorithm.decodeLength(proxyBuffer.length));
 

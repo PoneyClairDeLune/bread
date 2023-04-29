@@ -1,6 +1,12 @@
 "use strict";
 
-let b64Basis = [65, 97, 48];
+let b64Forward = [
+	48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 45, 95
+],
+b64Reverse = {};
+b64Forward.forEach(function (e, i) {
+	b64Reverse[e] = i;
+});
 
 let stockAlgorithms = [{
 	id: `korg87`,
@@ -23,30 +29,17 @@ let stockAlgorithms = [{
 	win: [3, 4],
 	block: [function (source, target) {
 		let blockVal = 0, encodeLength = this.encodeLength(source.length);
-		source.forEach((e, i) => {
+		source.forEach(function (e, i) {
 			blockVal |= e << (i << 3);
 		});
 		for (let i = 0; i < encodeLength; i ++) {
-			let proxyCode = blockVal % 64 + 32;
-			target[i] = b64Basis[Math.floor(proxyCode / 26)] + proxyCode % 26;
+			target[i] = b64Forward[blockVal & 63];
 			blockVal = blockVal >> 6;
 		};
 	}, function (source, target) {
 		let blockVal = 0, decodeLength = this.decodeLength(source.length);
-		source.forEach((e, i) => {
-			let proxyCode;
-			if (e > 96) {
-				proxyCode = 0;
-			} else if (e > 64) {
-				proxyCode = 26;
-			} else if (e > 47) {
-				proxyCode = 52;
-			} else {
-				// Invalid code point
-				throw(new Error(`Invalid code point ${e}`));
-			};
-			proxyCode += e % 26;
-			blockVal += (proxyCode - 32) * (64 ** i);
+		source.forEach(function (e, i) {
+			blockVal += b64Reverse[e] << (i * 6);
 		});
 		for (let i = 0; i < decodeLength; i ++) {
 			target[i] = blockVal & 255;
