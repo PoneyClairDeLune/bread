@@ -10,22 +10,99 @@ Template {
 }
 */
 
-let stockAlgorithms = [{
-	id: `korg87`,
-	win: [7, 8],
+import stockAlgorithms from "../xp_bread/stockAlgo.js";
+
+stockAlgorithms.push({
+	id: `qb36`,
+	win: [9, 14],
 	block: [function (source, target) {
-		let overlay = 0;
-		source.forEach(function (e, i) {
-			target[i + 1] = e & 127;
-			overlay |= (e >> 7) << i;
+		let blockVal = 0n, encodeLength = BigInt(this.encodeLength(source.length));
+		source.forEach((e, i) => {
+			blockVal |= BigInt(e) << (BigInt(i) << 3n);
 		});
-		target[0] = overlay;
+		for (let i = 0n; i < encodeLength; i ++) {
+			target[i] = Number(blockVal % 36n + 32n);
+			blockVal /= 36n;
+		};
 	}, function (source, target) {
-		let overlay = source[0];
-		source.subarray(1).forEach((e, i) => {
-			target[i] = e | (((overlay >> i) & 1) << 7);
-		})
+		let blockVal = 0n, decodeLength = BigInt(this.decodeLength(source.length));
+		source.forEach((e, i) => {
+			blockVal += (BigInt(e) - 32n) * (36n ** BigInt(i));
+		});
+		for (let i = 0n; i < decodeLength; i ++) {
+			target[i] = Number(blockVal & 255n);
+			blockVal = blockVal >> 8n;
+		};
 	}]
-}];
+});
+stockAlgorithms.push({
+	id: `qb85`,
+	win: [4, 5],
+	block: [function (source, target) {
+		let blockVal = 0n, encodeLength = BigInt(this.encodeLength(source.length));
+		source.forEach((e, i) => {
+			blockVal |= BigInt(e) << (BigInt(i) << 3n);
+		});
+		for (let i = 0n; i < encodeLength; i ++) {
+			target[i] = Number(blockVal % 85n + 36n);
+			blockVal /= 85n;
+		};
+	}, function (source, target) {
+		let blockVal = 0n, decodeLength = BigInt(this.decodeLength(source.length));
+		source.forEach((e, i) => {
+			blockVal += (BigInt(e) - 36n) * (85n ** BigInt(i));
+		});
+		for (let i = 0n; i < decodeLength; i ++) {
+			target[i] = Number(blockVal & 255n);
+			blockVal = blockVal >> 8n;
+		};
+	}]
+});
+stockAlgorithms.push({
+	id: `qb94`,
+	win: [9, 11],
+	block: [function (source, target) {
+		let blockVal = 0n, encodeLength = BigInt(this.encodeLength(source.length));
+		source.forEach((e, i) => {
+			blockVal |= BigInt(e) << (BigInt(i) << 3n);
+		});
+		for (let i = 0n; i < encodeLength; i ++) {
+			target[i] = Number(blockVal % 94n + 32n);
+			blockVal /= 94n;
+		};
+	}, function (source, target) {
+		let blockVal = 0n, decodeLength = BigInt(this.decodeLength(source.length));
+		source.forEach((e, i) => {
+			blockVal += (BigInt(e) - 32n) * (94n ** BigInt(i));
+		});
+		for (let i = 0n; i < decodeLength; i ++) {
+			target[i] = Number(blockVal & 255n);
+			blockVal = blockVal >> 8n;
+		};
+	}]
+});
+stockAlgorithms.push({
+	id: `qb95`,
+	win: [9, 11],
+	block: [function (source, target) {
+		let blockVal = 0n, encodeLength = BigInt(this.encodeLength(source.length));
+		source.forEach((e, i) => {
+			blockVal |= BigInt(e) << (BigInt(i) << 3n);
+		});
+		for (let i = 0n; i < encodeLength; i ++) {
+			target[i] = Number(blockVal % 95n + 32n);
+			blockVal /= 95n;
+		};
+	}, function (source, target) {
+		let blockVal = 0n, decodeLength = BigInt(this.decodeLength(source.length));
+		source.forEach((e, i) => {
+			blockVal += (BigInt(e) - 32n) * (95n ** BigInt(i));
+		});
+		for (let i = 0n; i < decodeLength; i ++) {
+			target[i] = Number(blockVal & 255n);
+			blockVal = blockVal >> 8n;
+		};
+	}]
+});
 
 export default stockAlgorithms;

@@ -41,6 +41,7 @@ let Breadcrumb = class Breadcrumb {
 		if (target.length < this.encodeLength(source.length, source)) {
 			throw(new Error(`Target isn't sufficient for encoding`));
 		};
+		target.fill(0);
 		let upThis = this, session = JSON.parse(JSON.stringify(this.#template.init && this.#template.init[0] || "null"));
 		windowMove(source, this.#chunkSizeEnc, target, this.#chunkSizeDec, function (s, t) {
 			upThis.#template?.block[0]?.call(upThis, s, t, session);
@@ -52,6 +53,7 @@ let Breadcrumb = class Breadcrumb {
 		if (target.length < this.decodeLength(source.length, source)) {
 			throw(new Error(`Target isn't sufficient for decoding`));
 		};
+		target.fill(0);
 		let upThis = this, session = JSON.parse(JSON.stringify(this.#template.init && this.#template.init[1] || "null"));;
 		windowMove(source, this.#chunkSizeDec, target, this.#chunkSizeEnc, function (s, t) {
 			upThis.#template?.block[1]?.call(upThis, s, t, session);
