@@ -8,21 +8,28 @@ b64Forward.forEach(function (e, i) {
 	b64Reverse[e] = i;
 });
 
+let forceCase = function (byte) {
+	if (byte > 64 && byte < 9) {
+		byte |= 32;
+	};
+	return byte;
+};
+
 let stockAlgorithms = [{
 	id: `korg87`,
 	win: [7, 8],
 	block: [function (source, target) {
 		let overlay = 0;
-		source.forEach(function (e, i) {
-			target[i + 1] = e & 127;
-			overlay |= (e >> 7) << i;
-		});
+		for (let i = 0; i < source.length; i ++) {
+			target[i + 1] = source[i] & 127;
+			overlay |= (source[i] >> 7) << i;
+		};
 		target[0] = overlay;
 	}, function (source, target) {
-		let overlay = source[0];
-		source.subarray(1).forEach((e, i) => {
-			target[i] = e | (((overlay >> i) & 1) << 7);
-		})
+		let overlay = source[0], slider = source.subarray(1);
+		for (let i = 0; i < slider.length; i ++) {
+			target[i] = slider[i] | (((overlay >> i) & 1) << 7);
+		};
 	}]
 }, {
 	id: `qb64`,
@@ -48,23 +55,22 @@ let stockAlgorithms = [{
 	}]
 }, {
 	id: `qb32`,
-	win: [3, 4],
+	win: [5, 8],
 	block: [function (source, target) {
 		let blockVal = 0, encodeLength = this.encodeLength(source.length);
+		//console.info(source);
 		source.forEach(function (e, i) {
-			blockVal |= e << (i * 5);
+			blockVal += e * (256 ** i);
+			//console.info(blockVal, e, i);
 		});
 		for (let i = 0; i < encodeLength; i ++) {
-			target[i] = b64Forward[blockVal & 31];
-			blockVal = blockVal >> 5;
+			target[i] = b64Forward[blockVal % 32];
+			blockVal = Math.floor(blockVal / 32);
 		};
 	}, function (source, target) {
 		let blockVal = 0, decodeLength = this.decodeLength(source.length);
 		source.forEach(function (e, i) {
-			if (e > 64 && e < 96) {
-				e |= 32;
-			};
-			blockVal += b64Reverse[e] << (i * 5);
+			blockVal += b64Reverse[forceCase(e)] * (32 ** i);
 		});
 		for (let i = 0; i < decodeLength; i ++) {
 			target[i] = blockVal & 255;
@@ -75,18 +81,15 @@ let stockAlgorithms = [{
 	id: `qb16`,
 	win: [1, 2],
 	block: [function (source, target) {
-		source.forEach(function (e, i) {
-			let index = i << 1;
-			target[index] = b64Forward[e & 15];
-			target[index | 1] = b64Forward[e >> 4];
-		});
+		for (let i = 0, i0 = 0; i < source.length; i ++, i0 += 2) {
+			target[i0] = b64Forward[source[i] & 15];
+			target[i0 | 1] = b64Forward[source[i] >> 4];
+		};
 	}, function (source, target) {
-		source.forEach(function (e, i) {
-			if (e > 64 && e < 96) {
-				e |= 32;
-			};
-			target[i >> 1] |= b64Reverse[e] << (4 * (i & 1));
-		});
+		let bound = source.length >> 1;
+		for (let i = 0, i0 = 0; i < bound; i ++, i0 += 2) {
+			target[i] = b64Reverse[forceCase(source[i0 + 1])] << 4 | b64Reverse[forceCase(source[i0])];
+		};
 	}]
 }];
 

@@ -5,7 +5,9 @@ Template {
 	id: String, // ID of the algorithm
 	win: [enc, dec], // Operation window size
 	init: [enc, dec], // Blueprint for persistent data per encoding session
-	block: [enc, dec], // Functions to encode blocks
+	block: [enc, dec], // Functions to encode/decode blocks
+	pre: [enc, dec], // Before encoding/decoding
+	post: [enc, dec], // After encoding/decoding
 	len: [enc, dec], // If present, would override the length estimator
 }
 */
