@@ -24,7 +24,7 @@ let proxyLength = algorithm.encodeLength(groundLength);
 let proxyPool = [];
 let decodeSink = new Uint8Array(groundLength);
 
-console.info(`Generating random tests for ${Deno.args[0]}...`);
+console.error(`Generating random tests for ${Deno.args[0]}...`);
 for (let count = 0; count < maxRuns; count ++) {
 	let groundBuffer = new Uint8Array(groundLength);
 	let proxyBuffer = new Uint8Array(proxyLength);
@@ -32,17 +32,20 @@ for (let count = 0; count < maxRuns; count ++) {
 	groundPool[count] = groundBuffer;
 	proxyPool[count] = proxyBuffer;
 };
-console.info(`Encoding with ${Deno.args[0]}...`);
+console.error(`Encoding with ${Deno.args[0]}...`);
 let startTime = Date.now();
 for (let count = 0; count < maxRuns; count ++) {
 	algorithm.encodeBytes(groundPool[count], proxyPool[count]);
 };
 let endTime = Date.now();
-console.info(`Costs ${(endTime - startTime) / maxRuns}ms per run (with overhead).`);
-console.info(`Decoding with ${Deno.args[0]}...`);
+let encTime = (endTime - startTime) / maxRuns;
+console.error(`Costs ${encTime}ms per run (with overhead).`);
+console.error(`Decoding with ${Deno.args[0]}...`);
 startTime = Date.now();
 for (let count = 0; count < maxRuns; count ++) {
 	algorithm.decodeBytes(proxyPool[count], decodeSink);
 };
 endTime = Date.now();
-console.info(`Costs ${(endTime - startTime) / maxRuns}ms per run (with overhead).`);
+let decTime = (endTime - startTime) / maxRuns;
+console.error(`Costs ${decTime}ms per run (with overhead).`);
+console.info(`${Deno.args[0]}	${encTime}	${decTime}`);
