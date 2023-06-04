@@ -58,9 +58,15 @@ let stockAlgorithms = [{
 	win: [5, 8],
 	block: [function (source, target) {
 		let blockVal = 0, encodeLength = this.encodeLength(source.length);
+		let bvLsb = 0, bvMsb = 0;
 		for (let i = 0; i < source.length; i ++) {
-			blockVal |= source[i] << (i * 8);
+			if (i < 3) {
+				bvLsb |= source[i] << (i << 3);
+			} else {
+				bvMsb |= source[i] << ((i - 3) << 3);
+			};
 		};
+		blockVal = bvMsb * 16777216 + bvLsb;
 		for (let i = 0; i < encodeLength; i ++) {
 			target[i] = b64Forward[blockVal & 31];
 			blockVal = Math.floor(blockVal / 32);
@@ -68,11 +74,17 @@ let stockAlgorithms = [{
 	}, function (source, target) {
 		let blockVal = 0, decodeLength = this.decodeLength(source.length);
 		for (let i = 0; i < source.length; i ++) {
-			blockVal |= b64Reverse[forceCase(source[i])] << (i * 5);
+			blockVal += b64Reverse[forceCase(source[i])] * (32 ** i);
 		};
+		let bvLsb = blockVal & 16777215, bvMsb = Math.floor(blockVal / 16777216);
 		for (let i = 0; i < decodeLength; i ++) {
-			target[i] = blockVal & 255;
-			blockVal = blockVal >> 8;
+			if (i < 3) {
+				target[i] = bvLsb & 255;
+				bvLsb = bvLsb >> 8;
+			} else {
+				target[i] = bvMsb & 255;
+				bvMsb = bvMsb >> 8;
+			};
 		};
 	}]
 }, {
