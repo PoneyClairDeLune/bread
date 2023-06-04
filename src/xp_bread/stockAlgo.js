@@ -143,6 +143,29 @@ let stockAlgorithms = [{
 			blockVal = blockVal >>> 8;
 		};
 	}]
+}, {
+	id: `qb128`,
+	win: [7, 8],
+	block: [function (source, target) {
+		let slider = 0, end = source.length - 1;
+		for (let i = 0; i < source.length; i ++) {
+			slider |= source[i] << i;
+			target[i] = slider & 127;
+			slider = slider >> 7;
+			if (i == end) {
+				target[i + 1] = slider;
+			};
+		};
+	}, function (source, target) {
+		let slider = 0;
+		for (let i = 0; i < source.length; i ++) {
+			slider |= source[i] << [0, 7, 6, 5, 4, 3, 2, 1][i];
+			if (i) {
+				target[i - 1] = slider & 255;
+				slider = slider >> 8;
+			};
+		};
+	}]
 }];
 
 export default stockAlgorithms;
