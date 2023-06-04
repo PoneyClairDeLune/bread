@@ -47,22 +47,23 @@ let stockAlgorithms = [{
 	id: `qb64`,
 	win: [3, 4],
 	block: [function (source, target) {
-		let blockVal = 0, encodeLength = this.encodeLength(source.length);
+		let slider = 0, end = source.length - 1;
 		for (let i = 0; i < source.length; i ++) {
-			blockVal |= source[i] << (i << 3);
-		};
-		for (let i = 0; i < encodeLength; i ++) {
-			target[i] = b64Forward[blockVal & 63];
-			blockVal = blockVal >> 6;
+			slider |= source[i] << (i << 1);
+			target[i] = b64Forward[slider & 63];
+			slider = slider >> 6;
+			if (i == end) {
+				target[i + 1] = b64Forward[slider];
+			};
 		};
 	}, function (source, target) {
-		let blockVal = 0, decodeLength = this.decodeLength(source.length);
+		let slider = 0;
 		for (let i = 0; i < source.length; i ++) {
-			blockVal |= b64Reverse[source[i]] << (i * 6);
-		};
-		for (let i = 0; i < decodeLength; i ++) {
-			target[i] = blockVal & 255;
-			blockVal = blockVal >> 8;
+			slider |= b64Reverse[source[i]] << [0, 6, 4, 2][i];
+			if (i) {
+				target[i - 1] = slider & 255;
+				slider = slider >> 8;
+			};
 		};
 	}]
 }, {
