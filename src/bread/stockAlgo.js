@@ -38,29 +38,6 @@ stockAlgorithms.push({
 	}]
 });
 stockAlgorithms.push({
-	id: `qb85`,
-	win: [4, 5],
-	block: [function (source, target) {
-		let blockVal = 0, encodeLength = BigInt(this.encodeLength(source.length));
-		source.forEach((e, i) => {
-			blockVal += e * (2 ** (i * 8));
-		});
-		for (let i = 0; i < encodeLength; i ++) {
-			target[i] = Number(blockVal % 85 + 36);
-			blockVal = Math.floor(blockVal / 85);
-		};
-	}, function (source, target) {
-		let blockVal = 0, decodeLength = BigInt(this.decodeLength(source.length));
-		source.forEach((e, i) => {
-			blockVal += (e - 36) * (85 ** i);
-		});
-		for (let i = 0n; i < decodeLength; i ++) {
-			target[i] = blockVal % 256;
-			blockVal = Math.floor(blockVal / 256);
-		};
-	}]
-});
-stockAlgorithms.push({
 	id: `qb94`,
 	win: [9, 11],
 	block: [function (source, target) {

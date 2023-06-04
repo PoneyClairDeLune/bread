@@ -93,16 +93,16 @@ let stockAlgorithms = [{
 	id: `qb85`,
 	win: [4, 5],
 	block: [function (source, target) {
-		let blockVal = 0, encodeLength = BigInt(this.encodeLength(source.length));
+		let blockVal = 0, encodeLength = this.encodeLength(source.length);
 		source.forEach((e, i) => {
-			blockVal += e * (2 ** (i * 8));
+			blockVal += e * (256 ** i);
 		});
 		for (let i = 0; i < encodeLength; i ++) {
-			target[i] = Number(blockVal % 85 + 36);
+			target[i] = blockVal % 85 + 36;
 			blockVal = Math.floor(blockVal / 85);
 		};
 	}, function (source, target) {
-		let blockVal = 0, decodeLength = BigInt(this.decodeLength(source.length));
+		let blockVal = 0, decodeLength = this.decodeLength(source.length);
 		source.forEach((e, i) => {
 			blockVal += (e - 36) * (85 ** i);
 		});
@@ -111,6 +111,8 @@ let stockAlgorithms = [{
 			blockVal = Math.floor(blockVal / 256);
 		};
 	}]
+}, {
+	id: `ib85`
 }];
 
 export default stockAlgorithms;
