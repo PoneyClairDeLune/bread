@@ -19,16 +19,28 @@ let stockAlgorithms = [{
 	id: `korg87`,
 	win: [7, 8],
 	block: [function (source, target) {
-		let overlay = 0;
 		for (let i = 0; i < source.length; i ++) {
 			target[i + 1] = source[i] & 127;
-			overlay |= (source[i] >> 7) << i;
+			target[0] |= (source[i] >> 7) << i;
 		};
-		target[0] = overlay;
 	}, function (source, target) {
-		let overlay = source[0], slider = source.subarray(1);
-		for (let i = 0; i < slider.length; i ++) {
-			target[i] = slider[i] | (((overlay >> i) & 1) << 7);
+		let slider = source.length - 1;
+		for (let i = 0; i < slider; i ++) {
+			target[i] = source[i + 1] | (((source[0] >> i) & 1) << 7);
+		};
+	}]
+}, {
+	id: `ov43`,
+	win: [3, 4],
+	block: [function (source, target) {
+		for (let i = 0; i < source.length; i ++) {
+			target[i + 1] = source[i] & 63;
+			target[0] |= (source[i] >> 6) << (i << 1);
+		};
+	}, function (source, target) {
+		let slider = source.length - 1;
+		for (let i = 0; i < slider; i ++) {
+			target[i] = source[i + 1] | (((source[0] >> (i << 1)) & 3) << 6);
 		};
 	}]
 }, {
@@ -101,7 +113,7 @@ let stockAlgorithms = [{
 		target[0] = b64Forward[source[0] & 15];
 		target[1] = b64Forward[source[0] >> 4];
 	}, function (source, target) {
-		target[0] = b64Reverse[forceCase(source[1])] << 4 | b64Reverse[forceCase(source[0])];
+		target[0] = b64Reverse[forceCase(source[1] || 0)] << 4 | b64Reverse[forceCase(source[0])];
 	}]
 }, {
 	id: `qb85`,
