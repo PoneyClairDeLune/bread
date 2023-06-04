@@ -1,9 +1,10 @@
-qb16
-qb32
-qb36
-qb64
+korg87
+ov43
+qb128
 qb85
+qb64
+qb32
+qb16
+qb36
 qb94
 qb95
-qb128
-korg87
