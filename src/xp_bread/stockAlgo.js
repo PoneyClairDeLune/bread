@@ -73,10 +73,17 @@ let stockAlgorithms = [{
 		};
 	}, function (source, target) {
 		let blockVal = 0, decodeLength = this.decodeLength(source.length);
+		let bvLsb = 0, bvMsb = 0;
 		for (let i = 0; i < source.length; i ++) {
-			blockVal += b64Reverse[forceCase(source[i])] * (32 ** i);
+			if (i < 4) {
+				bvLsb |= b64Reverse[forceCase(source[i])] << (i * 5);
+			} else if (i == 4) {
+				bvLsb |= (b64Reverse[forceCase(source[i])] & 15) << 20;
+				bvMsb |= b64Reverse[forceCase(source[i])] >> 4;
+			} else {
+				bvMsb |= b64Reverse[forceCase(source[i])] << ((i - 5) * 5 + 1);
+			};
 		};
-		let bvLsb = blockVal & 16777215, bvMsb = Math.floor(blockVal / 16777216);
 		for (let i = 0; i < decodeLength; i ++) {
 			if (i < 3) {
 				target[i] = bvLsb & 255;
