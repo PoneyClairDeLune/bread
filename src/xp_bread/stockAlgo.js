@@ -59,34 +59,56 @@ let stockAlgorithms = [{
 	block: [function (source, target) {
 		let blockVal = 0, encodeLength = this.encodeLength(source.length);
 		for (let i = 0; i < source.length; i ++) {
-			blockVal += source[i] * (256 ** i);
+			blockVal |= source[i] << (i * 8);
 		};
 		for (let i = 0; i < encodeLength; i ++) {
-			target[i] = b64Forward[blockVal % 32];
+			target[i] = b64Forward[blockVal & 31];
 			blockVal = Math.floor(blockVal / 32);
 		};
 	}, function (source, target) {
 		let blockVal = 0, decodeLength = this.decodeLength(source.length);
 		for (let i = 0; i < source.length; i ++) {
-			blockVal += b64Reverse[forceCase(source[i])] * (32 ** i);
+			blockVal |= b64Reverse[forceCase(source[i])] << (i * 5);
 		};
 		for (let i = 0; i < decodeLength; i ++) {
-			target[i] = blockVal % 256;
-			blockVal = Math.floor(blockVal / 256);
+			target[i] = blockVal & 255;
+			blockVal = blockVal >> 8;
 		};
 	}]
 }, {
 	id: `qb16`,
 	win: [1, 2],
 	block: [function (source, target) {
-		for (let i = 0, i0 = 0; i < source.length; i ++, i0 += 2) {
-			target[i0] = b64Forward[source[i] & 15];
-			target[i0 | 1] = b64Forward[source[i] >> 4];
+		for (let i = 0; i < source.length; i ++) {
+			target[i << 1] = b64Forward[source[i] & 15];
+			target[(i << 1) | 1] = b64Forward[source[i] >> 4];
 		};
 	}, function (source, target) {
 		let bound = source.length >> 1;
-		for (let i = 0, i0 = 0; i < bound; i ++, i0 += 2) {
-			target[i] = b64Reverse[forceCase(source[i0 + 1])] << 4 | b64Reverse[forceCase(source[i0])];
+		for (let i = 0; i < bound; i ++) {
+			target[i] = b64Reverse[forceCase(source[(i << 1) | 1])] << 4 | b64Reverse[forceCase(source[i << 1])];
+		};
+	}]
+}, {
+	id: `qb85`,
+	win: [4, 5],
+	block: [function (source, target) {
+		let blockVal = 0, encodeLength = BigInt(this.encodeLength(source.length));
+		source.forEach((e, i) => {
+			blockVal += e * (2 ** (i * 8));
+		});
+		for (let i = 0; i < encodeLength; i ++) {
+			target[i] = Number(blockVal % 85 + 36);
+			blockVal = Math.floor(blockVal / 85);
+		};
+	}, function (source, target) {
+		let blockVal = 0, decodeLength = BigInt(this.decodeLength(source.length));
+		source.forEach((e, i) => {
+			blockVal += (e - 36) * (85 ** i);
+		});
+		for (let i = 0; i < decodeLength; i ++) {
+			target[i] = blockVal % 256;
+			blockVal = Math.floor(blockVal / 256);
 		};
 	}]
 }];

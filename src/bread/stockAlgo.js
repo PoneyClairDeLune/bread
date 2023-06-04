@@ -41,22 +41,22 @@ stockAlgorithms.push({
 	id: `qb85`,
 	win: [4, 5],
 	block: [function (source, target) {
-		let blockVal = 0n, encodeLength = BigInt(this.encodeLength(source.length));
+		let blockVal = 0, encodeLength = BigInt(this.encodeLength(source.length));
 		source.forEach((e, i) => {
-			blockVal |= BigInt(e) << (BigInt(i) << 3n);
+			blockVal += e * (2 ** (i * 8));
 		});
-		for (let i = 0n; i < encodeLength; i ++) {
-			target[i] = Number(blockVal % 85n + 36n);
-			blockVal /= 85n;
+		for (let i = 0; i < encodeLength; i ++) {
+			target[i] = Number(blockVal % 85 + 36);
+			blockVal = Math.floor(blockVal / 85);
 		};
 	}, function (source, target) {
-		let blockVal = 0n, decodeLength = BigInt(this.decodeLength(source.length));
+		let blockVal = 0, decodeLength = BigInt(this.decodeLength(source.length));
 		source.forEach((e, i) => {
-			blockVal += (BigInt(e) - 36n) * (85n ** BigInt(i));
+			blockVal += (e - 36) * (85 ** i);
 		});
 		for (let i = 0n; i < decodeLength; i ++) {
-			target[i] = Number(blockVal & 255n);
-			blockVal = blockVal >> 8n;
+			target[i] = blockVal % 256;
+			blockVal = Math.floor(blockVal / 256);
 		};
 	}]
 });
