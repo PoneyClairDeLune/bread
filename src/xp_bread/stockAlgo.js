@@ -44,6 +44,22 @@ let stockAlgorithms = [{
 		};
 	}]
 }, {
+	id: `ovm43`,
+	win: [3, 4],
+	block: [function (source, target) {
+		for (let i = 0; i < source.length; i ++) {
+			target[i + 1] = b64Forward[source[i] & 63];
+			target[0] |= (source[i] >> 6) << (i << 1);
+		};
+		target[0] = b64Forward[target[0]];
+	}, function (source, target) {
+		let slider = source.length - 1,
+		overlay = b64Reverse[source[0]];
+		for (let i = 0; i < slider; i ++) {
+			target[i] = b64Reverse[source[i + 1]] | (((overlay >> (i << 1)) & 3) << 6);
+		};
+	}]
+}, {
 	id: `qb64`,
 	win: [3, 4],
 	block: [function (source, target) {
