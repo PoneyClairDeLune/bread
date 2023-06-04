@@ -98,15 +98,10 @@ let stockAlgorithms = [{
 	id: `qb16`,
 	win: [1, 2],
 	block: [function (source, target) {
-		for (let i = 0; i < source.length; i ++) {
-			target[i << 1] = b64Forward[source[i] & 15];
-			target[(i << 1) | 1] = b64Forward[source[i] >> 4];
-		};
+		target[0] = b64Forward[source[0] & 15];
+		target[1] = b64Forward[source[0] >> 4];
 	}, function (source, target) {
-		let bound = source.length >> 1;
-		for (let i = 0; i < bound; i ++) {
-			target[i] = b64Reverse[forceCase(source[(i << 1) | 1])] << 4 | b64Reverse[forceCase(source[i << 1])];
-		};
+		target[0] = b64Reverse[forceCase(source[1])] << 4 | b64Reverse[forceCase(source[0])];
 	}]
 }, {
 	id: `qb85`,
